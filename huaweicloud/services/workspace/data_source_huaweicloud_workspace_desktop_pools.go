@@ -37,7 +37,7 @@ func DataSourceDesktopPools() *schema.Resource {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ValidateFunc: validation.StringInSlice([]string{"DYNAMIC", "STATIC"}, false),
-				Description:  "The type of the desktop pool.",
+				Description:  "The type of the desktop pool. Valid values are DYNAMIC and STATIC.",
 			},
 			"enterprise_project_id": {
 				Type:        schema.TypeString,
@@ -50,7 +50,7 @@ func DataSourceDesktopPools() *schema.Resource {
 				Default:     true,
 				Description: "Whether the desktop pool is in maintenance mode.",
 			},
-			"pools": {
+			"desktop_pools": {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Elem:        desktopPoolSchema(),
@@ -152,27 +152,19 @@ func desktopPoolSchema() *schema.Resource {
 			"root_volume": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Elem:        desktopVolumeSchema(),
+				Elem:        volumeInfoSchema(),
 				Description: "The root volume information of the desktop pool.",
 			},
 			"data_volumes": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Elem:        desktopVolumeSchema(),
+				Elem:        volumeInfoSchema(),
 				Description: "The data volumes information of the desktop pool.",
 			},
 			"security_groups": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: "The ID of the security group.",
-						},
-					},
-				},
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem:        securityGroupSchema(),
 				Description: "The security groups of the desktop pool.",
 			},
 			"disconnected_retention_period": {
@@ -221,17 +213,17 @@ func productSchema() *schema.Resource {
 			"product_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The ID of the product.",
+				Description: "The product ID.",
 			},
 			"flavor_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The flavor ID of the product.",
+				Description: "The flavor ID.",
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The type of the product.",
+				Description: "The product type.",
 			},
 			"cpu": {
 				Type:        schema.TypeString,
@@ -246,39 +238,51 @@ func productSchema() *schema.Resource {
 			"descriptions": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The description of the product.",
+				Description: "The product description.",
 			},
 			"charge_mode": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The charging mode of the product.",
+				Description: "The charging mode.",
 			},
 		},
 	}
 }
 
-func desktopVolumeSchema() *schema.Resource {
+func volumeInfoSchema() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The ID of the volume.",
+				Description: "The volume ID.",
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The type of the volume.",
+				Description: "The volume type.",
 			},
 			"size": {
 				Type:        schema.TypeInt,
 				Computed:    true,
-				Description: "The size of the volume in GB.",
+				Description: "The volume size in GB.",
 			},
 			"resource_spec_code": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The resource specification code of the volume.",
+				Description: "The resource specification code.",
+			},
+		},
+	}
+}
+
+func securityGroupSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The security group ID.",
 			},
 		},
 	}
@@ -290,7 +294,7 @@ func autoscalePolicySchema() *schema.Resource {
 			"autoscale_type": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The type of auto scaling.",
+				Description: "The auto scaling type.",
 			},
 			"max_auto_created": {
 				Type:        schema.TypeInt,
@@ -332,7 +336,7 @@ func listDesktopPools(client *golangsdk.ServiceClient, d *schema.ResourceData) (
 	var (
 		httpUrl = "v2/{project_id}/desktop-pools"
 		offset  = 0
-		limit   = 200
+		limit   = 1000
 		result  = make([]interface{}, 0)
 	)
 
@@ -359,15 +363,139 @@ func listDesktopPools(client *golangsdk.ServiceClient, d *schema.ResourceData) (
 			return nil, err
 		}
 
-		desktopPools := utils.PathSearch("desktop_pools", respBody, make([]interface{}, 0)).([]interface{})
-		result = append(result, desktopPools...)
-		if len(desktopPools) < limit {
-			break
+		pools := utils.PathSearch("desktop_pools", respBody, make([]interface{}, 0)).([]interface{})
+		result = append(result, pools...)
+		if len(pools) < limit {
+			return result, nil
 		}
-		offset += len(desktopPools)
+		offset += len(pools)
+	}
+}
+
+func flattenProduct(product interface{}) []interface{} {
+	if product == nil {
+		return nil
 	}
 
-	return result, nil
+	result := map[string]interface{}{
+		"product_id":   utils.PathSearch("product_id", product, nil),
+		"flavor_id":    utils.PathSearch("flavor_id", product, nil),
+		"type":         utils.PathSearch("type", product, nil),
+		"cpu":          utils.PathSearch("cpu", product, nil),
+		"memory":       utils.PathSearch("memory", product, nil),
+		"descriptions": utils.PathSearch("descriptions", product, nil),
+		"charge_mode":  utils.PathSearch("charge_mode", product, nil),
+	}
+
+	return []interface{}{result}
+}
+
+func flattenVolume(volume interface{}) []interface{} {
+	if volume == nil {
+		return nil
+	}
+
+	result := map[string]interface{}{
+		"id":                 utils.PathSearch("id", volume, nil),
+		"type":               utils.PathSearch("type", volume, nil),
+		"size":               utils.PathSearch("size", volume, nil),
+		"resource_spec_code": utils.PathSearch("resource_spec_code", volume, nil),
+	}
+
+	return []interface{}{result}
+}
+
+func flattenDataVolumeInfos(volumes interface{}) []interface{} {
+	volumesList := volumes.([]interface{})
+	if len(volumesList) == 0 {
+		return nil
+	}
+
+	result := make([]interface{}, 0, len(volumesList))
+	for _, item := range volumesList {
+		volume := map[string]interface{}{
+			"id":                 utils.PathSearch("id", item, nil),
+			"type":               utils.PathSearch("type", item, nil),
+			"size":               utils.PathSearch("size", item, nil),
+			"resource_spec_code": utils.PathSearch("resource_spec_code", item, nil),
+		}
+		result = append(result, volume)
+	}
+
+	return result
+}
+
+func flattenSecurityGroups(groups []interface{}) []interface{} {
+	if len(groups) == 0 {
+		return nil
+	}
+
+	result := make([]interface{}, 0, len(groups))
+	for _, item := range groups {
+		group := map[string]interface{}{
+			"id": utils.PathSearch("id", item, nil),
+		}
+		result = append(result, group)
+	}
+
+	return result
+}
+
+func flattenAutoscalePolicy(policy interface{}) []interface{} {
+	if policy == nil {
+		return nil
+	}
+
+	result := map[string]interface{}{
+		"autoscale_type":    utils.PathSearch("autoscale_type", policy, nil),
+		"max_auto_created":  utils.PathSearch("max_auto_created", policy, nil),
+		"min_idle":          utils.PathSearch("min_idle", policy, nil),
+		"once_auto_created": utils.PathSearch("once_auto_created", policy, nil),
+	}
+
+	return []interface{}{result}
+}
+
+func flattenDesktopPools(pools []interface{}) []interface{} {
+	if len(pools) == 0 {
+		return nil
+	}
+
+	result := make([]interface{}, 0, len(pools))
+	for _, item := range pools {
+		pool := map[string]interface{}{
+			"id":                            utils.PathSearch("id", item, nil),
+			"name":                          utils.PathSearch("name", item, nil),
+			"type":                          utils.PathSearch("type", item, nil),
+			"description":                   utils.PathSearch("description", item, nil),
+			"created_time":                  utils.PathSearch("created_time", item, nil),
+			"charging_mode":                 utils.PathSearch("charging_mode", item, nil),
+			"desktop_count":                 utils.PathSearch("desktop_count", item, nil),
+			"desktop_used":                  utils.PathSearch("desktop_used", item, nil),
+			"availability_zone":             utils.PathSearch("availability_zone", item, nil),
+			"subnet_id":                     utils.PathSearch("subnet_id", item, nil),
+			"product":                       flattenProduct(utils.PathSearch("product", item, nil)),
+			"image_id":                      utils.PathSearch("image_id", item, nil),
+			"image_name":                    utils.PathSearch("image_name", item, nil),
+			"image_os_type":                 utils.PathSearch("image_os_type", item, nil),
+			"image_os_version":              utils.PathSearch("image_os_version", item, nil),
+			"image_os_platform":             utils.PathSearch("image_os_platform", item, nil),
+			"image_product_code":            utils.PathSearch("image_product_code", item, nil),
+			"root_volume":                   flattenVolume(utils.PathSearch("root_volume", item, nil)),
+			"data_volumes":                  flattenDataVolumeInfos(utils.PathSearch("data_volumes", item, nil)),
+			"security_groups":               flattenSecurityGroups(utils.PathSearch("security_groups", item, make([]interface{}, 0)).([]interface{})),
+			"disconnected_retention_period": utils.PathSearch("disconnected_retention_period", item, nil),
+			"enable_autoscale":              utils.PathSearch("enable_autoscale", item, nil),
+			"autoscale_policy":              flattenAutoscalePolicy(utils.PathSearch("autoscale_policy", item, nil)),
+			"status":                        utils.PathSearch("status", item, nil),
+			"enterprise_project_id":         utils.PathSearch("enterprise_project_id", item, nil),
+			"in_maintenance_mode":           utils.PathSearch("in_maintenance_mode", item, nil),
+			"desktop_name_policy_id":        utils.PathSearch("desktop_name_policy_id", item, nil),
+		}
+		result = append(result, pool)
+	}
+
+	return result
 }
 
 func dataSourceDesktopPoolsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -378,9 +506,9 @@ func dataSourceDesktopPoolsRead(_ context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("error creating Workspace client: %s", err)
 	}
 
-	desktopPools, err := listDesktopPools(client, d)
+	pools, err := listDesktopPools(client, d)
 	if err != nil {
-		return diag.Errorf("error querying desktop pools: %s", err)
+		return diag.Errorf("error querying workspace desktop pools: %s", err)
 	}
 
 	uuid, err := uuid.GenerateUUID()
@@ -391,130 +519,7 @@ func dataSourceDesktopPoolsRead(_ context.Context, d *schema.ResourceData, meta 
 
 	mErr := multierror.Append(
 		d.Set("region", region),
-		d.Set("pools", flattenDesktopPools(desktopPools)),
+		d.Set("desktop_pools", flattenDesktopPools(pools)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
-}
-
-func flattenProductInfo(productInfo interface{}) []interface{} {
-	if productInfo == nil {
-		return nil
-	}
-
-	return []interface{}{
-		map[string]interface{}{
-			"product_id":   utils.PathSearch("product_id", productInfo, nil),
-			"flavor_id":    utils.PathSearch("flavor_id", productInfo, nil),
-			"type":         utils.PathSearch("type", productInfo, nil),
-			"cpu":          utils.PathSearch("cpu", productInfo, nil),
-			"memory":       utils.PathSearch("memory", productInfo, nil),
-			"descriptions": utils.PathSearch("descriptions", productInfo, nil),
-			"charge_mode":  utils.PathSearch("charge_mode", productInfo, nil),
-		},
-	}
-}
-
-func flattenVolumeInfo(volumeInfo interface{}) map[string]interface{} {
-	if volumeInfo == nil {
-		return nil
-	}
-
-	return map[string]interface{}{
-		"id":                 utils.PathSearch("id", volumeInfo, nil),
-		"type":               utils.PathSearch("type", volumeInfo, nil),
-		"size":               utils.PathSearch("size", volumeInfo, nil),
-		"resource_spec_code": utils.PathSearch("resource_spec_code", volumeInfo, nil),
-	}
-}
-
-func flattenDesktopPoolsRootVolume(rootVolume interface{}) []map[string]interface{} {
-	if rootVolume == nil {
-		return nil
-	}
-
-	return []map[string]interface{}{flattenVolumeInfo(rootVolume)}
-}
-
-func flattenDesktopPoolsDataVolumes(dataVolumes interface{}) []map[string]interface{} {
-	dataVolumeArray := dataVolumes.([]interface{})
-	if len(dataVolumeArray) == 0 {
-		return nil
-	}
-
-	volumes := make([]map[string]interface{}, 0)
-	for _, volume := range dataVolumeArray {
-		volumes = append(volumes, flattenVolumeInfo(volume))
-	}
-
-	return volumes
-}
-
-func flattenSecurityGroups(securityGroups interface{}) []interface{} {
-	if securityGroups == nil {
-		return nil
-	}
-
-	groups := make([]interface{}, 0)
-	for _, group := range securityGroups.([]interface{}) {
-		groups = append(groups, map[string]interface{}{
-			"id": utils.PathSearch("id", group, nil),
-		})
-	}
-
-	return groups
-}
-
-func flattenAutoscalePolicy(autoscalePolicy interface{}) []interface{} {
-	if autoscalePolicy == nil {
-		return nil
-	}
-
-	return []interface{}{
-		map[string]interface{}{
-			"autoscale_type":    utils.PathSearch("autoscale_type", autoscalePolicy, nil),
-			"max_auto_created":  utils.PathSearch("max_auto_created", autoscalePolicy, nil),
-			"min_idle":          utils.PathSearch("min_idle", autoscalePolicy, nil),
-			"once_auto_created": utils.PathSearch("once_auto_created", autoscalePolicy, nil),
-		},
-	}
-}
-
-func flattenDesktopPools(pools []interface{}) []interface{} {
-	if len(pools) < 1 {
-		return nil
-	}
-
-	result := make([]interface{}, 0, len(pools))
-	for _, pool := range pools {
-		result = append(result, map[string]interface{}{
-			"id":                            utils.PathSearch("id", pool, nil),
-			"name":                          utils.PathSearch("name", pool, nil),
-			"type":                          utils.PathSearch("type", pool, nil),
-			"description":                   utils.PathSearch("description", pool, nil),
-			"created_time":                  utils.PathSearch("created_time", pool, nil),
-			"charging_mode":                 utils.PathSearch("charging_mode", pool, nil),
-			"desktop_count":                 utils.PathSearch("desktop_count", pool, nil),
-			"desktop_used":                  utils.PathSearch("desktop_used", pool, nil),
-			"availability_zone":             utils.PathSearch("availability_zone", pool, nil),
-			"subnet_id":                     utils.PathSearch("subnet_id", pool, nil),
-			"product":                       flattenProductInfo(utils.PathSearch("product", pool, nil)),
-			"image_id":                      utils.PathSearch("image_id", pool, nil),
-			"image_name":                    utils.PathSearch("image_name", pool, nil),
-			"image_os_type":                 utils.PathSearch("image_os_type", pool, nil),
-			"image_os_version":              utils.PathSearch("image_os_version", pool, nil),
-			"image_os_platform":             utils.PathSearch("image_os_platform", pool, nil),
-			"image_product_code":            utils.PathSearch("image_product_code", pool, nil),
-			"root_volume":                   flattenDesktopPoolsRootVolume(utils.PathSearch("root_volume", pool, nil)),
-			"data_volumes":                  flattenDesktopPoolsDataVolumes(utils.PathSearch("data_volumes", pool, nil)),
-			"security_groups":               flattenSecurityGroups(utils.PathSearch("security_groups", pool, nil)),
-			"disconnected_retention_period": utils.PathSearch("disconnected_retention_period", pool, nil),
-			"enable_autoscale":              utils.PathSearch("enable_autoscale", pool, nil),
-			"autoscale_policy":              flattenAutoscalePolicy(utils.PathSearch("autoscale_policy", pool, nil)),
-			"status":                        utils.PathSearch("status", pool, nil),
-			"enterprise_project_id":         utils.PathSearch("enterprise_project_id", pool, nil),
-			"in_maintenance_mode":           utils.PathSearch("in_maintenance_mode", pool, nil),
-			"desktop_name_policy_id":        utils.PathSearch("desktop_name_policy_id", pool, nil),
-		})
-	}
-	return result
 }

@@ -1503,7 +1503,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktops":                 workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":                  workspace.DataSourceWorkspaceFlavors(),
 			"huaweicloud_workspace_service":                  workspace.DataSourceService(),
-			"huaweicloud_workspace_desktop_pools":            workspace.DataSourceDesktopPools(),
 
 			"huaweicloud_cpts_projects": cpts.DataSourceCptsProjects(),
 
@@ -2164,14 +2163,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_ges_metadata": ges.ResourceGesMetadata(),
 			"huaweicloud_ges_backup":   ges.ResourceGesBackup(),
 
-			"huaweicloud_hss_host_group":                 hss.ResourceHostGroup(),
-			"huaweicloud_hss_cce_protection":             hss.ResourceCCEProtection(),
-			"huaweicloud_hss_host_protection":            hss.ResourceHostProtection(),
-			"huaweicloud_hss_webtamper_protection":       hss.ResourceWebTamperProtection(),
-			"huaweicloud_hss_quota":                      hss.ResourceQuota(),
-			"huaweicloud_hss_policy_group_deploy":        hss.ResourcePolicyGroupDeploy(),
-			"huaweicloud_hss_event_unblock_ip":           hss.ResourceEventUnblockIp(),
-			"huaweicloud_hss_event_delete_isolated_file": hss.ResourceEventDeleteIsolatedFile(),
+			"huaweicloud_hss_host_group":           hss.ResourceHostGroup(),
+			"huaweicloud_hss_cce_protection":       hss.ResourceCCEProtection(),
+			"huaweicloud_hss_host_protection":      hss.ResourceHostProtection(),
+			"huaweicloud_hss_webtamper_protection": hss.ResourceWebTamperProtection(),
+			"huaweicloud_hss_quota":                hss.ResourceQuota(),
+			"huaweicloud_hss_policy_group_deploy":  hss.ResourcePolicyGroupDeploy(),
+			"huaweicloud_hss_event_unblock_ip":     hss.ResourceEventUnblockIp(),
 
 			"huaweicloud_identity_access_key":            iam.ResourceIdentityKey(),
 			"huaweicloud_identity_acl":                   iam.ResourceIdentityACL(),

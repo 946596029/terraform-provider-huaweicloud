@@ -1503,6 +1503,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktops":                 workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":                  workspace.DataSourceWorkspaceFlavors(),
 			"huaweicloud_workspace_service":                  workspace.DataSourceService(),
+			"huaweicloud_workspace_desktop_pools":            workspace.DataSourceDesktopPools(),
 
 			"huaweicloud_cpts_projects": cpts.DataSourceCptsProjects(),
 

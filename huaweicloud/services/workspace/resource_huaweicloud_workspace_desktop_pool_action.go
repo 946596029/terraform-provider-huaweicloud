@@ -87,7 +87,7 @@ func resourceDesktopPoolActionCreate(ctx context.Context, d *schema.ResourceData
 	)
 	client, err := cfg.NewServiceClient("workspace", region)
 	if err != nil {
-		return diag.Errorf("error creating Workspace App client: %s", err)
+		return diag.Errorf("error creating Workspace client: %s", err)
 	}
 
 	createPath := client.Endpoint + httpUrl

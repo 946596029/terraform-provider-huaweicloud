@@ -1,0 +1,559 @@
+2025-08-01T09:53:13.900+0800 [DEBUG] sdk.helper_resource: Starting TestCase: test_name=TestAccResourceAppRule_basic test_step_number=4
+2025-08-01T09:53:13.901+0800 [DEBUG] sdk.helper_resource: Calling TestCase PreCheck: test_name=TestAccResourceAppRule_basic test_step_number=4
+2025-08-01T09:53:13.901+0800 [DEBUG] sdk.helper_resource: Called TestCase PreCheck: test_name=TestAccResourceAppRule_basic test_step_number=4
+2025-08-01T09:53:13.903+0800 [DEBUG] sdk.helper_resource: Found Terraform CLI: test_terraform_path=/usr/bin/terraform test_name=TestAccResourceAppRule_basic test_step_number=4
+2025-08-01T09:53:14.672+0800 [DEBUG] sdk.helper_resource: Creating sdkv2 provider instance: test_name=TestAccResourceAppRule_basic test_step_number=4 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:14.672+0800 [DEBUG] sdk.helper_resource: Created sdkv2 provider instance: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=4 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:14.672+0800 [DEBUG] sdk.helper_resource: Starting sdkv2 provider instance server: test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic test_step_number=4
+2025-08-01T09:53:14.674+0800 [DEBUG] sdk.helper_resource: Started sdkv2 provider instance server: tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic test_step_number=4 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678
+2025-08-01T09:53:15.025+0800 [DEBUG] sdk.helper_resource: Stopping providers: test_step_number=4 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic
+2025-08-01T09:53:15.025+0800 [DEBUG] sdk.helper_resource: Starting TestSteps: test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=4
+2025-08-01T09:53:15.025+0800 [DEBUG] sdk.helper_resource: Starting TestStep: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678
+2025-08-01T09:53:15.026+0800 [DEBUG] sdk.helper_resource: Creating sdkv2 provider instance: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:15.026+0800 [DEBUG] sdk.helper_resource: Created sdkv2 provider instance: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:15.026+0800 [DEBUG] sdk.helper_resource: Starting sdkv2 provider instance server: test_name=TestAccResourceAppRule_basic test_step_number=1 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678
+2025-08-01T09:53:15.027+0800 [DEBUG] sdk.helper_resource: Started sdkv2 provider instance server: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic
+2025/08/01 09:53:17 [DEBUG] customer endpoints: map[]
+2025/08/01 09:53:17 [DEBUG] [1754013197333-1] API Request URL: GET https://iam.cn-north-4.myhuaweicloud.com/v3/projects?name=cn-north-4
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Sdk-Date: 20250801T015317Z
+2025/08/01 09:53:17 [DEBUG] [1754013197333-1] API Response Code: 200
+API Response Headers:
+Cache-Control: no-cache, no-store, must-revalidate
+Connection: keep-alive
+Content-Length: 469
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 01 Aug 2025 01:53:17 GMT
+Pragma: no-cache
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=b8dea19cc78d1a1b820; path=/
+Set-Cookie: HWWAFSESTIME=1754013195060; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Iam-Trace-Id: cache_cn-north-4_null_07ffb1ace6442cfd46135886da8efed8
+X-Request-Id: 07ffb1ace6442cfd46135886da8efed8
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:17 [DEBUG] [1754013197333-1] API Response Body: {
+  "links": {
+    "next": null,
+    "previous": null,
+    "self": "https://iam.cn-north-4.myhuaweicloud.com/v3/projects?name=cn-north-4"
+  },
+  "projects": [
+    {
+      "description": "",
+      "domain_id": "0970d7b7d400f2470fbec00316a03560",
+      "enabled": true,
+      "id": "0970dd7a1300f5672ff2c003c60ae115",
+      "is_domain": false,
+      "links": {
+        "next": null,
+        "previous": null,
+        "self": "https://iam.cn-north-4.myhuaweicloud.com/v3/projects/0970dd7a1300f5672ff2c003c60ae115"
+      },
+      "name": "cn-north-4",
+      "parent_id": "0970d7b7d400f2470fbec00316a03560"
+    }
+  ]
+}
+2025/08/01 09:53:17 [DEBUG] init region and project map: map[string]string{"cn-north-4":"0970dd7a1300f5672ff2c003c60ae115"}
+2025/08/01 09:53:17 [DEBUG] [1754013197627-2] API Request URL: GET https://iam.cn-north-4.myhuaweicloud.com/v3/auth/domains
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015317Z
+2025/08/01 09:53:17 [DEBUG] [1754013197627-2] API Response Code: 200
+API Response Headers:
+Connection: keep-alive
+Content-Length: 270
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 01 Aug 2025 01:53:17 GMT
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=c9094fd317c7814ae7; path=/
+Set-Cookie: HWWAFSESTIME=1754013195830; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Iam-Trace-Id: token_cn-north-4_null_8aab8ebebf3ca091f1fe12952a12bbb5
+X-Request-Id: 8aab8ebebf3ca091f1fe12952a12bbb5
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:17 [DEBUG] [1754013197627-2] API Response Body: {
+  "domains": [
+    {
+      "description": "",
+      "enabled": true,
+      "id": "0970d7b7d400f2470fbec00316a03560",
+      "links": {
+        "self": "https://iam.myhuaweicloud.com/v3/domains/0970d7b7d400f2470fbec00316a03560"
+      },
+      "name": "hwstaff_zhenguo"
+    }
+  ],
+  "links": {
+    "self": "https://iam.myhuaweicloud.com/v3/auth/domains"
+  }
+}
+2025/08/01 09:53:17 [DEBUG] [1754013197791-3] API Request URL: GET https://bss.myhuaweicloud.com/v2/products/service-types?limit=1
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015317Z
+2025/08/01 09:53:17 [DEBUG] [1754013197791-3] API Response Code: 200
+API Response Headers:
+Cache-Control: no-cache, no-store, must-revalidate
+Connection: keep-alive
+Content-Length: 146
+Content-Type: application/json; charset=utf-8
+Date: Fri, 01 Aug 2025 01:53:17 GMT
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Lubanops-Gtrace-Id: v-4813493-1754013197892-146937250
+Lubanops-Nenv-Id: 161809
+Pragma: no-cache
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=99a4e208723e0a1f9a4; path=/
+Set-Cookie: HWWAFSESTIME=1754013193783; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Kong-Proxy-Latency: 12
+X-Kong-Upstream-Latency: 39
+X-Request-Id: 7b0357f1c08c4b238889a0754b6f881a
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:17 [DEBUG] [1754013197791-3] API Response Body: {
+  "service_types": [
+    {
+      "abbreviation": "MessageOver5G",
+      "service_type_code": "hws.service.type.5gmsg",
+      "service_type_name": "5G消息"
+    }
+  ],
+  "total_count": 854
+}
+2025/08/01 09:53:17 [DEBUG] current version: 
+2025-08-01T09:53:19.345+0800 [DEBUG] sdk.helper_resource: Stopping providers: test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1
+2025-08-01T09:53:19.345+0800 [DEBUG] sdk.helper_resource: Running Terraform CLI plan and apply: test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1
+2025-08-01T09:53:19.345+0800 [DEBUG] sdk.helper_resource: Creating sdkv2 provider instance: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic
+2025-08-01T09:53:19.345+0800 [DEBUG] sdk.helper_resource: Created sdkv2 provider instance: test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic test_step_number=1
+2025-08-01T09:53:19.345+0800 [DEBUG] sdk.helper_resource: Starting sdkv2 provider instance server: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic
+2025-08-01T09:53:19.346+0800 [DEBUG] sdk.helper_resource: Started sdkv2 provider instance server: test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:21.297+0800 [WARN]  sdk.helper_schema: Previously configured provider being re-configured. This can cause issues in concurrent testing if the configurations are not equal.: tf_req_id=d99a0098-7579-6c23-37db-aa386816cdda tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud tf_rpc=Configure
+2025/08/01 09:53:21 [DEBUG] customer endpoints: map[]
+2025/08/01 09:53:21 [DEBUG] [1754013201297-4] API Request URL: GET https://iam.cn-north-4.myhuaweicloud.com/v3/projects?name=cn-north-4
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Sdk-Date: 20250801T015321Z
+2025/08/01 09:53:21 [DEBUG] [1754013201297-4] API Response Code: 200
+API Response Headers:
+Cache-Control: no-cache, no-store, must-revalidate
+Connection: keep-alive
+Content-Length: 469
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 01 Aug 2025 01:53:21 GMT
+Pragma: no-cache
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=564b27fbac3d887e78; path=/
+Set-Cookie: HWWAFSESTIME=1754013200871; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Iam-Trace-Id: cache_cn-north-4_null_5846e21938eac1b31de837b4fb2b27e6
+X-Request-Id: 5846e21938eac1b31de837b4fb2b27e6
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:21 [DEBUG] [1754013201297-4] API Response Body: {
+  "links": {
+    "next": null,
+    "previous": null,
+    "self": "https://iam.cn-north-4.myhuaweicloud.com/v3/projects?name=cn-north-4"
+  },
+  "projects": [
+    {
+      "description": "",
+      "domain_id": "0970d7b7d400f2470fbec00316a03560",
+      "enabled": true,
+      "id": "0970dd7a1300f5672ff2c003c60ae115",
+      "is_domain": false,
+      "links": {
+        "next": null,
+        "previous": null,
+        "self": "https://iam.cn-north-4.myhuaweicloud.com/v3/projects/0970dd7a1300f5672ff2c003c60ae115"
+      },
+      "name": "cn-north-4",
+      "parent_id": "0970d7b7d400f2470fbec00316a03560"
+    }
+  ]
+}
+2025/08/01 09:53:21 [DEBUG] init region and project map: map[string]string{"cn-north-4":"0970dd7a1300f5672ff2c003c60ae115"}
+2025/08/01 09:53:21 [DEBUG] [1754013201352-5] API Request URL: GET https://iam.cn-north-4.myhuaweicloud.com/v3/auth/domains
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015321Z
+2025/08/01 09:53:21 [DEBUG] [1754013201352-5] API Response Code: 200
+API Response Headers:
+Connection: keep-alive
+Content-Length: 270
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 01 Aug 2025 01:53:21 GMT
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=ad2761dec83084d442c; path=/
+Set-Cookie: HWWAFSESTIME=1754013197730; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Iam-Trace-Id: token_cn-north-4_null_1faf7c84ac2b0d4b717d9a37c51a800a
+X-Request-Id: 1faf7c84ac2b0d4b717d9a37c51a800a
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:21 [DEBUG] [1754013201352-5] API Response Body: {
+  "domains": [
+    {
+      "description": "",
+      "enabled": true,
+      "id": "0970d7b7d400f2470fbec00316a03560",
+      "links": {
+        "self": "https://iam.myhuaweicloud.com/v3/domains/0970d7b7d400f2470fbec00316a03560"
+      },
+      "name": "hwstaff_zhenguo"
+    }
+  ],
+  "links": {
+    "self": "https://iam.myhuaweicloud.com/v3/auth/domains"
+  }
+}
+2025/08/01 09:53:21 [DEBUG] [1754013201433-6] API Request URL: GET https://bss.myhuaweicloud.com/v2/products/service-types?limit=1
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015321Z
+2025/08/01 09:53:21 [DEBUG] [1754013201433-6] API Response Code: 200
+API Response Headers:
+Cache-Control: no-cache, no-store, must-revalidate
+Connection: keep-alive
+Content-Length: 146
+Content-Type: application/json; charset=utf-8
+Date: Fri, 01 Aug 2025 01:53:21 GMT
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Lubanops-Gtrace-Id: v-4813477-1754013201500-146512594
+Lubanops-Nenv-Id: 161809
+Pragma: no-cache
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=6962da04c3394f4f62; path=/
+Set-Cookie: HWWAFSESTIME=1754013200979; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Kong-Proxy-Latency: 14
+X-Kong-Upstream-Latency: 42
+X-Request-Id: 3261c23a90bf575402b14c0f32ec69cd
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:21 [DEBUG] [1754013201433-6] API Response Body: {
+  "service_types": [
+    {
+      "abbreviation": "MessageOver5G",
+      "service_type_code": "hws.service.type.5gmsg",
+      "service_type_name": "5G消息"
+    }
+  ],
+  "total_count": 854
+}
+2025/08/01 09:53:21 [DEBUG] current version: 
+2025-08-01T09:53:23.649+0800 [DEBUG] sdk.helper_resource: Stopping providers: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:23.649+0800 [DEBUG] sdk.helper_resource: Creating sdkv2 provider instance: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:23.649+0800 [DEBUG] sdk.helper_resource: Created sdkv2 provider instance: test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:23.650+0800 [DEBUG] sdk.helper_resource: Starting sdkv2 provider instance server: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:23.651+0800 [DEBUG] sdk.helper_resource: Started sdkv2 provider instance server: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:23.969+0800 [DEBUG] sdk.helper_resource: Stopping providers: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:23.970+0800 [DEBUG] sdk.helper_resource: Creating sdkv2 provider instance: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:23.970+0800 [DEBUG] sdk.helper_resource: Created sdkv2 provider instance: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:23.970+0800 [DEBUG] sdk.helper_resource: Starting sdkv2 provider instance server: test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic test_step_number=1
+2025-08-01T09:53:23.971+0800 [DEBUG] sdk.helper_resource: Started sdkv2 provider instance server: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:25.606+0800 [WARN]  sdk.helper_schema: Previously configured provider being re-configured. This can cause issues in concurrent testing if the configurations are not equal.: tf_rpc=Configure tf_req_id=e84c6e32-f24e-d7fd-bc25-9e6b973dcab3 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025/08/01 09:53:25 [DEBUG] customer endpoints: map[]
+2025/08/01 09:53:25 [DEBUG] [1754013205606-7] API Request URL: GET https://iam.cn-north-4.myhuaweicloud.com/v3/projects?name=cn-north-4
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Sdk-Date: 20250801T015325Z
+2025/08/01 09:53:25 [DEBUG] [1754013205606-7] API Response Code: 200
+API Response Headers:
+Cache-Control: no-cache, no-store, must-revalidate
+Connection: keep-alive
+Content-Length: 469
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 01 Aug 2025 01:53:25 GMT
+Pragma: no-cache
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=fb255a0a5217d613ab; path=/
+Set-Cookie: HWWAFSESTIME=1754013205219; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Iam-Trace-Id: cache_cn-north-4_null_19bc338bcaddc6f47f3ad5631ea8c645
+X-Request-Id: 19bc338bcaddc6f47f3ad5631ea8c645
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:25 [DEBUG] [1754013205606-7] API Response Body: {
+  "links": {
+    "next": null,
+    "previous": null,
+    "self": "https://iam.cn-north-4.myhuaweicloud.com/v3/projects?name=cn-north-4"
+  },
+  "projects": [
+    {
+      "description": "",
+      "domain_id": "0970d7b7d400f2470fbec00316a03560",
+      "enabled": true,
+      "id": "0970dd7a1300f5672ff2c003c60ae115",
+      "is_domain": false,
+      "links": {
+        "next": null,
+        "previous": null,
+        "self": "https://iam.cn-north-4.myhuaweicloud.com/v3/projects/0970dd7a1300f5672ff2c003c60ae115"
+      },
+      "name": "cn-north-4",
+      "parent_id": "0970d7b7d400f2470fbec00316a03560"
+    }
+  ]
+}
+2025/08/01 09:53:25 [DEBUG] init region and project map: map[string]string{"cn-north-4":"0970dd7a1300f5672ff2c003c60ae115"}
+2025/08/01 09:53:25 [DEBUG] [1754013205715-8] API Request URL: GET https://iam.cn-north-4.myhuaweicloud.com/v3/auth/domains
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015325Z
+2025/08/01 09:53:25 [DEBUG] [1754013205715-8] API Response Code: 200
+API Response Headers:
+Connection: keep-alive
+Content-Length: 270
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 01 Aug 2025 01:53:25 GMT
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=ca6299d903b5a05681; path=/
+Set-Cookie: HWWAFSESTIME=1754013205497; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Iam-Trace-Id: token_cn-north-4_null_3eeacd9c1db6b71c74f344af7ba8ab7b
+X-Request-Id: 3eeacd9c1db6b71c74f344af7ba8ab7b
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:25 [DEBUG] [1754013205715-8] API Response Body: {
+  "domains": [
+    {
+      "description": "",
+      "enabled": true,
+      "id": "0970d7b7d400f2470fbec00316a03560",
+      "links": {
+        "self": "https://iam.myhuaweicloud.com/v3/domains/0970d7b7d400f2470fbec00316a03560"
+      },
+      "name": "hwstaff_zhenguo"
+    }
+  ],
+  "links": {
+    "self": "https://iam.myhuaweicloud.com/v3/auth/domains"
+  }
+}
+2025/08/01 09:53:25 [DEBUG] [1754013205792-9] API Request URL: GET https://bss.myhuaweicloud.com/v2/products/service-types?limit=1
+API Request Headers:
+Accept: application/json
+Authorization: ***
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015325Z
+2025/08/01 09:53:25 [DEBUG] [1754013205792-9] API Response Code: 200
+API Response Headers:
+Cache-Control: no-cache, no-store, must-revalidate
+Connection: keep-alive
+Content-Length: 146
+Content-Type: application/json; charset=utf-8
+Date: Fri, 01 Aug 2025 01:53:25 GMT
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Lubanops-Gtrace-Id: v-4813503-1754013205921-146939814
+Lubanops-Nenv-Id: 161809
+Lubanops-Nspan-Id: 1
+Lubanops-Ntrace-Id: 4915733-1754013205929-1992250
+Pragma: no-cache
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=6f48f3bb4817d70f5d1; path=/
+Set-Cookie: HWWAFSESTIME=1754013202465; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Frame-Options: SAMEORIGIN
+X-Kong-Proxy-Latency: 12
+X-Kong-Upstream-Latency: 33
+X-Request-Id: a4f45d74865bf8ac851936b1e1c57bcf
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:25 [DEBUG] [1754013205792-9] API Response Body: {
+  "service_types": [
+    {
+      "abbreviation": "MessageOver5G",
+      "service_type_code": "hws.service.type.5gmsg",
+      "service_type_name": "5G消息"
+    }
+  ],
+  "total_count": 854
+}
+2025/08/01 09:53:25 [DEBUG] current version: 
+2025/08/01 09:53:26 [DEBUG] [1754013205992-11] API Request URL: POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules
+API Request Headers:
+Accept: application/json
+Authorization: ***
+Content-Type: application/json
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015325Z
+2025/08/01 09:53:26 [DEBUG] [1754013205992-11] API Request Body: {
+  "description": "Created by terraform script for path rule",
+  "name": "tf_test_ebmrh_path",
+  "rule": {
+    "path_rule": {
+      "path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE"
+    },
+    "scope": "PATH"
+  }
+}
+2025/08/01 09:53:26 [DEBUG] [1754013205992-11] API Response Code: 403
+API Response Headers:
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Connection: keep-alive
+Content-Type: application/json
+Date: Fri, 01 Aug 2025 01:53:26 GMT
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=add15736a46b7f5b61; path=/
+Set-Cookie: HWWAFSESTIME=1754013206050; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Envoy-Upstream-Service-Time: 113
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: dc994e1d65109a30a4a1699096df81c5
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:26 [DEBUG] [1754013205992-11] API Response Body: {
+  "encoded_authorization_message": "** large string **",
+  "error_code": "WKS.00010099",
+  "error_msg": "User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity-based policy allows the workspace:appcenter:createAppRule action."
+}
+2025-08-01T09:53:26.203+0800 [ERROR] sdk.proto: Response contains error diagnostic: tf_proto_version=5.3 tf_rpc=ApplyResourceChange diagnostic_detail="" diagnostic_severity=ERROR
+  diagnostic_summary=
+  | error creating Workspace application rule: Action forbidden: [POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules], request_id: dc994e1d65109a30a4a1699096df81c5, error message: {"error_code":"WKS.00010099","error_msg":"User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity
+  | ...
+   tf_resource_type=huaweicloud_workspace_app_rule tf_req_id=4a4681e1-6bd5-33dc-cca8-1ea2b15bb083 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025/08/01 09:53:26 [DEBUG] [1754013205992-10] API Request URL: POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules
+API Request Headers:
+Accept: application/json
+Authorization: ***
+Content-Type: application/json
+User-Agent: terraform-provider-iac golangsdk/2.0.0
+X-Project-Id: 0970dd7a1300f5672ff2c003c60ae115
+X-Sdk-Date: 20250801T015325Z
+2025/08/01 09:53:26 [DEBUG] [1754013205992-10] API Request Body: {
+  "description": "Created by terraform script",
+  "name": "tf_test_ebmrh",
+  "rule": {
+    "product_rule": {
+      "identify_condition": "process",
+      "process_name": "WINWORD.EXE",
+      "product_name": "Microsoft Office",
+      "product_version": "2019",
+      "publisher": "Microsoft Corporation",
+      "support_os": "Windows",
+      "version": "1.0"
+    },
+    "scope": "PRODUCT"
+  }
+}
+2025/08/01 09:53:26 [DEBUG] [1754013205992-10] API Response Code: 403
+API Response Headers:
+Cache-Control: no-cache, no-store, max-age=0, must-revalidate
+Connection: keep-alive
+Content-Type: application/json
+Date: Fri, 01 Aug 2025 01:53:26 GMT
+Server: CloudWAF
+Set-Cookie: HWWAFSESID=1fc5f730549f13bbde; path=/
+Set-Cookie: HWWAFSESTIME=1754013206058; path=/
+Strict-Transport-Security: max-age=31536000; includeSubdomains;
+X-Content-Type-Options: nosniff
+X-Download-Options: noopen
+X-Envoy-Upstream-Service-Time: 119
+X-Frame-Options: SAMEORIGIN
+X-Request-Id: 02ab9f7127befe652b29238e0bc0b1f7
+X-Xss-Protection: 1; mode=block;
+2025/08/01 09:53:26 [DEBUG] [1754013205992-10] API Response Body: {
+  "encoded_authorization_message": "** large string **",
+  "error_code": "WKS.00010099",
+  "error_msg": "User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity-based policy allows the workspace:appcenter:createAppRule action."
+}
+2025-08-01T09:53:26.210+0800 [ERROR] sdk.proto: Response contains error diagnostic: tf_proto_version=5.3 tf_rpc=ApplyResourceChange tf_resource_type=huaweicloud_workspace_app_rule diagnostic_detail="" diagnostic_severity=ERROR
+  diagnostic_summary=
+  | error creating Workspace application rule: Action forbidden: [POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules], request_id: 02ab9f7127befe652b29238e0bc0b1f7, error message: {"error_code":"WKS.00010099","error_msg":"User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity
+  | ...
+   tf_req_id=e299ad10-8671-8ef6-d7bf-24f785e216ca tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:26.221+0800 [WARN]  sdk.helper_resource: Error running Terraform CLI command: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic
+  error=
+  | exit status 1
+  | 
+  | Error: error creating Workspace application rule: Action forbidden: [POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules], request_id: 02ab9f7127befe652b29238e0bc0b1f7, error message: {"error_code":"WKS.00010099","error_msg":"User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity
+  | ...
+  | 
+  |   with huaweicloud_workspace_app_rule.with_product_rule,
+  |   on terraform_plugin_test.tf line 2, in resource "huaweicloud_workspace_app_rule" "with_product_rule":
+  |    2: resource "huaweicloud_workspace_app_rule" "with_product_rule" {
+  | 
+  | 
+  | Error: error creating Workspace application rule: Action forbidden: [POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules], request_id: dc994e1d65109a30a4a1699096df81c5, error message: {"error_code":"WKS.00010099","error_msg":"User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity
+  | ...
+  | 
+  |   with huaweicloud_workspace_app_rule.with_path_rule,
+  |   on terraform_plugin_test.tf line 21, in resource "huaweicloud_workspace_app_rule" "with_path_rule":
+  |   21: resource "huaweicloud_workspace_app_rule" "with_path_rule" {
+  | 
+  
+2025-08-01T09:53:26.221+0800 [DEBUG] sdk.helper_resource: Stopping providers: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:26.221+0800 [ERROR] sdk.helper_resource: Unexpected error:
+  error=
+  | Error running apply: exit status 1
+  | 
+  | Error: error creating Workspace application rule: Action forbidden: [POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules], request_id: 02ab9f7127befe652b29238e0bc0b1f7, error message: {"error_code":"WKS.00010099","error_msg":"User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity
+  | ...
+  | 
+  |   with huaweicloud_workspace_app_rule.with_product_rule,
+  |   on terraform_plugin_test.tf line 2, in resource "huaweicloud_workspace_app_rule" "with_product_rule":
+  |    2: resource "huaweicloud_workspace_app_rule" "with_product_rule" {
+  | 
+  | 
+  | Error: error creating Workspace application rule: Action forbidden: [POST https://workspace.cn-north-4.myhuaweicloud.com/v1/0970dd7a1300f5672ff2c003c60ae115/app-center/app-rules], request_id: dc994e1d65109a30a4a1699096df81c5, error message: {"error_code":"WKS.00010099","error_msg":"User: iam::0970d7b7d400f2470fbec00316a03560:user:yanghongyu is not authorized to perform: workspace:appcenter:createAppRule on resource: * because no identity
+  | ...
+  | 
+  |   with huaweicloud_workspace_app_rule.with_path_rule,
+  |   on terraform_plugin_test.tf line 21, in resource "huaweicloud_workspace_app_rule" "with_path_rule":
+  |   21: resource "huaweicloud_workspace_app_rule" "with_path_rule" {
+  | 
+   test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1
+2025-08-01T09:53:26.222+0800 [DEBUG] sdk.helper_resource: Creating sdkv2 provider instance: test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic test_step_number=1 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_terraform_path=/usr/bin/terraform
+2025-08-01T09:53:26.222+0800 [DEBUG] sdk.helper_resource: Created sdkv2 provider instance: tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 test_name=TestAccResourceAppRule_basic
+2025-08-01T09:53:26.222+0800 [DEBUG] sdk.helper_resource: Starting sdkv2 provider instance server: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud
+2025-08-01T09:53:26.223+0800 [DEBUG] sdk.helper_resource: Started sdkv2 provider instance server: test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678 tf_provider_addr=registry.terraform.io/hashicorp/huaweicloud test_name=TestAccResourceAppRule_basic
+2025-08-01T09:53:26.543+0800 [DEBUG] sdk.helper_resource: Stopping providers: test_name=TestAccResourceAppRule_basic test_step_number=1 test_terraform_path=/usr/bin/terraform test_working_directory=/tmp/plugintest553946678

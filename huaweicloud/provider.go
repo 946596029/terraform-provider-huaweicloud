@@ -1612,7 +1612,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_workload_queues":                 dws.DataSourceWorkloadQueues(),
 
 			// Workspace
-			"huaweicloud_workspace_app_rules":              workspace.DataSourceAppRules(),
+			"huaweicloud_workspace_application_rules":      workspace.DataSourceApplicationRules(),
 			"huaweicloud_workspace_available_ip_number":    workspace.DataSourceAvailableIpNumber(),
 			"huaweicloud_workspace_desktops":               workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_desktop_connections":    workspace.DataSourceDesktopConnections(),
@@ -2853,7 +2853,7 @@ func Provider() *schema.Provider {
 			// Workspace
 			"huaweicloud_workspace_user_group":                workspace.ResourceUserGroup(),
 			"huaweicloud_workspace_access_policy":             workspace.ResourceAccessPolicy(),
-			"huaweicloud_workspace_app_rule":                  workspace.ResourceAppRule(),
+			"huaweicloud_workspace_application_rule":          workspace.ResourceApplicationRule(),
 			"huaweicloud_workspace_desktop_name_rule":         workspace.ResourceDesktopNameRule(),
 			"huaweicloud_workspace_desktop":                   workspace.ResourceDesktop(),
 			"huaweicloud_workspace_desktop_notification":      workspace.ResourceDesktopNotification(),

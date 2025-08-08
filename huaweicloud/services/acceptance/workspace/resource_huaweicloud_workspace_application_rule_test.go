@@ -12,24 +12,24 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/workspace"
 )
 
-func getResourceAppRuleFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
+func getResourceApplicationRuleFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
 	client, err := cfg.NewServiceClient("workspace", acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating Workspace client: %s", err)
 	}
 
-	return workspace.GetAppRuleById(client, state.Primary.ID)
+	return workspace.GetApplicationRuleById(client, state.Primary.ID)
 }
 
-func TestAccResourceAppRule_basic(t *testing.T) {
+func TestAccResourceApplicationRule_basic(t *testing.T) {
 	var (
 		name = acceptance.RandomAccResourceName()
 
-		withProductRule = "huaweicloud_workspace_app_rule.with_product_rule"
-		withPathRule    = "huaweicloud_workspace_app_rule.with_path_rule"
+		withProductRule = "huaweicloud_workspace_application_rule.with_product_rule"
+		withPathRule    = "huaweicloud_workspace_application_rule.with_path_rule"
 		appRule         interface{}
-		rcWithProduct   = acceptance.InitResourceCheck(withProductRule, &appRule, getResourceAppRuleFunc)
-		rcWithPath      = acceptance.InitResourceCheck(withPathRule, &appRule, getResourceAppRuleFunc)
+		rcWithProduct   = acceptance.InitResourceCheck(withProductRule, &appRule, getResourceApplicationRuleFunc)
+		rcWithPath      = acceptance.InitResourceCheck(withPathRule, &appRule, getResourceApplicationRuleFunc)
 	)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -43,7 +43,7 @@ func TestAccResourceAppRule_basic(t *testing.T) {
 		),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccResourceAppRule_basic_step1(name),
+				Config: testAccResourceApplicationRule_basic_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rcWithProduct.CheckResourceExists(),
 					resource.TestCheckResourceAttr(withProductRule, "name", name),
@@ -67,7 +67,7 @@ func TestAccResourceAppRule_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccResourceAppRule_basic_step2(name),
+				Config: testAccResourceApplicationRule_basic_step2(name),
 				Check: resource.ComposeTestCheckFunc(
 					rcWithProduct.CheckResourceExists(),
 					resource.TestCheckResourceAttr(withProductRule, "name", name),
@@ -104,9 +104,9 @@ func TestAccResourceAppRule_basic(t *testing.T) {
 	})
 }
 
-func testAccResourceAppRule_basic_step1(name string) string {
+func testAccResourceApplicationRule_basic_step1(name string) string {
 	return fmt.Sprintf(`
-resource "huaweicloud_workspace_app_rule" "with_product_rule" {
+resource "huaweicloud_workspace_application_rule" "with_product_rule" {
   name        = "%[1]s"
   description = "Created by terraform script"
 
@@ -125,7 +125,7 @@ resource "huaweicloud_workspace_app_rule" "with_product_rule" {
   }
 }
 
-resource "huaweicloud_workspace_app_rule" "with_path_rule" {
+resource "huaweicloud_workspace_application_rule" "with_path_rule" {
   name        = "%[1]s_path"
   description = "Created by terraform script for path rule"
 
@@ -140,9 +140,9 @@ resource "huaweicloud_workspace_app_rule" "with_path_rule" {
 `, name)
 }
 
-func testAccResourceAppRule_basic_step2(name string) string {
+func testAccResourceApplicationRule_basic_step2(name string) string {
 	return fmt.Sprintf(`
-resource "huaweicloud_workspace_app_rule" "with_product_rule" {
+resource "huaweicloud_workspace_application_rule" "with_product_rule" {
   name = "%[1]s"
 
   rule {
@@ -160,7 +160,7 @@ resource "huaweicloud_workspace_app_rule" "with_product_rule" {
   }
 }
 
-resource "huaweicloud_workspace_app_rule" "with_path_rule" {
+resource "huaweicloud_workspace_application_rule" "with_path_rule" {
   name        = "%[1]s_path"
   description = "Updated by terraform script for path rule"
 

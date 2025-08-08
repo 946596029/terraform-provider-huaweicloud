@@ -10,14 +10,14 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func TestAccAppRulesDataSource_basic(t *testing.T) {
+func TestAccApplicationRulesDataSource_basic(t *testing.T) {
 	var (
 		name = acceptance.RandomAccResourceNameWithDash()
 
-		dcName = "data.huaweicloud_workspace_app_rules.test"
+		dcName = "data.huaweicloud_workspace_application_rules.test"
 		dc     = acceptance.InitDataSourceCheck(dcName)
 
-		filterByName   = "data.huaweicloud_workspace_app_rules.filter_by_name"
+		filterByName   = "data.huaweicloud_workspace_application_rules.filter_by_name"
 		dcFilterByName = acceptance.InitDataSourceCheck(filterByName)
 	)
 
@@ -28,7 +28,7 @@ func TestAccAppRulesDataSource_basic(t *testing.T) {
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAppRulesDataSource_basic(name),
+				Config: testAccApplicationRulesDataSource_basic(name),
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
 					resource.TestMatchResourceAttr(dcName, "app_rules.#", regexp.MustCompile(`^[0-9]+$`)),
@@ -47,7 +47,7 @@ func TestAccAppRulesDataSource_basic(t *testing.T) {
 	})
 }
 
-func testAccAppRulesDataSource_base(name string) string {
+func testAccApplicationRulesDataSource_base(name string) string {
 	return fmt.Sprintf(`
 resource "huaweicloud_workspace_app_rule" "with_product_rule" {
   name        = "%[1]s"
@@ -83,31 +83,31 @@ resource "huaweicloud_workspace_app_rule" "with_path_rule" {
 `, name)
 }
 
-func testAccAppRulesDataSource_basic(name string) string {
+func testAccApplicationRulesDataSource_basic(name string) string {
 	// the name filter case need validate the context is contain the filter parameter?
 	return fmt.Sprintf(`
 %[1]s
 
-data "huaweicloud_workspace_app_rules" "test" {
+data "huaweicloud_workspace_application_rules" "test" {
   depends_on = [
-    huaweicloud_workspace_app_rule.with_product_rule,
-    huaweicloud_workspace_app_rule.with_path_rule
+    huaweicloud_workspace_application_rule.with_product_rule,
+    huaweicloud_workspace_application_rule.with_path_rule
   ]
 }
 
-data "huaweicloud_workspace_app_rules" "filter_by_name" {
+data "huaweicloud_workspace_application_rules" "filter_by_name" {
   name = "%[2]s"
 
   depends_on = [
-    huaweicloud_workspace_app_rule.with_product_rule,
-    huaweicloud_workspace_app_rule.with_path_rule
+    huaweicloud_workspace_application_rule.with_product_rule,
+    huaweicloud_workspace_application_rule.with_path_rule
   ]
 }
 
 output "is_name_filter_useful" {
-  value = length(data.huaweicloud_workspace_app_rules.filter_by_name.app_rules) > 0 && alltrue(
-    [for v in data.huaweicloud_workspace_app_rules.filter_by_name.app_rules[*].name : strcontains(v, "%[2]s") == true]
+  value = length(data.huaweicloud_workspace_application_rules.filter_by_name.app_rules) > 0 && alltrue(
+    [for v in data.huaweicloud_workspace_application_rules.filter_by_name.app_rules[*].name : strcontains(v, "%[2]s") == true]
   )
 }
-`, testAccAppRulesDataSource_base(name), name)
+`, testAccApplicationRulesDataSource_base(name), name)
 }

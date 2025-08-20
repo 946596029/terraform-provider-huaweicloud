@@ -493,9 +493,10 @@ var (
 	HW_CODEARTS_PUBLIC_IP_ADDRESS = os.Getenv("HW_CODEARTS_PUBLIC_IP_ADDRESS")
 	HW_CODEARTS_SSH_CREDENTIAL_ID = os.Getenv("HW_CODEARTS_SSH_CREDENTIAL_ID")
 
-	HW_EG_TEST_ON     = os.Getenv("HW_EG_TEST_ON") // Whether to run the EG related tests.
-	HW_EG_CHANNEL_ID  = os.Getenv("HW_EG_CHANNEL_ID")
-	HW_EG_AGENCY_NAME = os.Getenv("HW_EG_AGENCY_NAME")
+	HW_EG_TEST_ON        = os.Getenv("HW_EG_TEST_ON") // Whether to run the EG related tests.
+	HW_EG_SUBCRIPTION_ID = os.Getenv("HW_EG_SUBCRIPTION_ID")
+	HW_EG_CHANNEL_ID     = os.Getenv("HW_EG_CHANNEL_ID")
+	HW_EG_AGENCY_NAME    = os.Getenv("HW_EG_AGENCY_NAME")
 
 	HW_KOOGALLERY_ASSET = os.Getenv("HW_KOOGALLERY_ASSET")
 
@@ -2542,6 +2543,13 @@ func TestAccPreCheckModelArtsResourcePoolBatchResize(t *testing.T) {
 func TestAccPreCheckEG(t *testing.T) {
 	if HW_EG_TEST_ON == "" {
 		t.Skip("Skip all sub tests of the EG service.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckEgSubscriptionId(t *testing.T) {
+	if HW_EG_SUBCRIPTION_ID == "" {
+		t.Skip("The sub-resource acceptance test of the EG subscription must set 'HW_EG_SUBCRIPTION_ID'")
 	}
 }
 

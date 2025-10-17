@@ -92,11 +92,10 @@ func changeBillingOption(client *golangsdk.ServiceClient, d *schema.ResourceData
 func resourceBillingOptionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
 		product = "cdn"
 	)
 
-	client, err := cfg.NewServiceClient(product, region)
+	client, err := cfg.NewServiceClient(product, "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}
@@ -150,12 +149,11 @@ func GetBillingOptionDetail(client *golangsdk.ServiceClient, productType string)
 func resourceBillingOptionRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
 		product = "cdn"
 		mErr    *multierror.Error
 	)
 
-	client, err := cfg.NewServiceClient(product, region)
+	client, err := cfg.NewServiceClient(product, "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}
@@ -186,10 +184,9 @@ func flattenEffectiveTime(result interface{}) string {
 func resourceBillingOptionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
 		product = "cdn"
 	)
-	client, err := cfg.NewServiceClient(product, region)
+	client, err := cfg.NewServiceClient(product, "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}

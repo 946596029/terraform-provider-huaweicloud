@@ -76,12 +76,11 @@ func buildDataSourceBillingOptionQueryParams(d *schema.ResourceData) string {
 func dataSourceBillingOptionRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
 		product = "cdn"
 		mErr    *multierror.Error
 	)
 
-	client, err := cfg.NewServiceClient(product, region)
+	client, err := cfg.NewServiceClient(product, "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}

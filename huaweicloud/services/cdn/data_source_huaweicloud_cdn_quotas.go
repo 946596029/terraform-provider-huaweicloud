@@ -20,13 +20,6 @@ func DataSourceQuotas() *schema.Resource {
 		ReadContext: dataSourceQuotasRead,
 
 		Schema: map[string]*schema.Schema{
-			"region": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
-				Description: `The region where the resource quotas are located.`,
-			},
-
 			// Attributes.
 			"quotas": {
 				Type:     schema.TypeList,
@@ -105,11 +98,10 @@ func flattenQuotas(quotas []interface{}) []map[string]interface{} {
 
 func dataSourceQuotasRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		cfg    = meta.(*config.Config)
-		region = cfg.GetRegion(d)
+		cfg = meta.(*config.Config)
 	)
 
-	client, err := cfg.NewServiceClient("cdn", region)
+	client, err := cfg.NewServiceClient("cdn", "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}
@@ -126,7 +118,6 @@ func dataSourceQuotasRead(_ context.Context, d *schema.ResourceData, meta interf
 	d.SetId(randomUUID)
 
 	mErr := multierror.Append(
-		d.Set("region", region),
 		d.Set("quotas", flattenQuotas(resp)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())

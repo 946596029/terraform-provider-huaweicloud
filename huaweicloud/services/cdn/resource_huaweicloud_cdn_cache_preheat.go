@@ -103,11 +103,10 @@ func buildCachePreheatBodyParams(d *schema.ResourceData) interface{} {
 func resourceCachePreheatCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg           = meta.(*config.Config)
-		region        = cfg.GetRegion(d)
 		product       = "cdn"
 		createHttpUrl = "v1.0/cdn/content/preheating-tasks"
 	)
-	client, err := cfg.NewServiceClient(product, region)
+	client, err := cfg.NewServiceClient(product, "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}
@@ -147,11 +146,10 @@ func resourceCachePreheatCreate(ctx context.Context, d *schema.ResourceData, met
 func resourceCachePreheatRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
 		product = "cdn"
 		mErr    *multierror.Error
 	)
-	client, err := cfg.NewServiceClient(product, region)
+	client, err := cfg.NewServiceClient(product, "")
 	if err != nil {
 		return diag.Errorf("error creating CDN client: %s", err)
 	}

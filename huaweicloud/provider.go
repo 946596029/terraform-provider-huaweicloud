@@ -556,6 +556,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_organization_accounts":           aom.DataSourceOrganizationAccounts(),
 			"huaweicloud_aom_prom_instances":                  aom.DataSourceAomPromInstances(),
 			"huaweicloud_aom_service_discovery_rules":         aom.DataSourceServiceDiscoveryRules(),
+			"huaweicloud_aom_uniagents":                       aom.DataSourceUniAgents(),
 
 			"huaweicloud_apig_acl_policies":                       apig.DataSourceAclPolicies(),
 			"huaweicloud_apig_api_associated_acl_policies":        apig.DataSourceApiAssociatedAclPolicies(),

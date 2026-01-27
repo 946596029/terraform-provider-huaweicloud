@@ -1,6 +1,8 @@
 package iam
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -8,9 +10,28 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func TestAccIdentityPermissionsDataSource_basic(t *testing.T) {
-	resourceName := "data.huaweicloud_identity_permissions.test"
-	dc := acceptance.InitDataSourceCheck(resourceName)
+func TestAccDataSourcePermissions_basic(t *testing.T) {
+	var (
+		name = acceptance.RandomAccResourceName()
+
+		dcName = "data.huaweicloud_identity_permissions.all"
+		dc     = acceptance.InitDataSourceCheck(dcName)
+
+		dcNameByName = "data.huaweicloud_identity_permissions.filter_by_name"
+		dcByName     = acceptance.InitDataSourceCheck(dcNameByName)
+
+		dcNameByCatalog = "data.huaweicloud_identity_permissions.filter_by_catalog"
+		dcByCatalog     = acceptance.InitDataSourceCheck(dcNameByCatalog)	
+
+		dcNameByType = "data.huaweicloud_identity_permissions.filter_by_type"
+		dcByType     = acceptance.InitDataSourceCheck(dcNameByType)
+
+		dcNameByCustom = "data.huaweicloud_identity_permissions.filter_by_custom"
+		dcByCustom     = acceptance.InitDataSourceCheck(dcNameByCustom)
+
+		dcNameByScopeType = "data.huaweicloud_identity_permissions.filter_by_scope_type"
+		dcByScopeType     = acceptance.InitDataSourceCheck(dcNameByScopeType)
+	)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
@@ -20,14 +41,19 @@ func TestAccIdentityPermissionsDataSource_basic(t *testing.T) {
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccIdentityPermissionsDataSource_basic(),
+				Config: testAccDataSourcePermissions_basic(name),
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
-					resource.TestCheckResourceAttrSet(resourceName, "permissions.#"),
+					resource.TestMatchResourceAttr(dcName, "permissions.#", regexp.MustCompile(`^[1-9]([0-9]*)?$`)),
+					dcByName.CheckResourceExists(),
 					resource.TestCheckOutput("name_filter_is_useful", "true"),
+					dcByCatalog.CheckResourceExists(),
 					resource.TestCheckOutput("catalog_filter_is_useful", "true"),
+					dcByType.CheckResourceExists(),
 					resource.TestCheckOutput("type_filter_is_useful", "true"),
+					dcByCustom.CheckResourceExists(),
 					resource.TestCheckOutput("custom_filter_is_useful", "true"),
+					dcByScopeType.CheckResourceExists(),
 					resource.TestCheckOutput("scope_type_filter_is_useful", "true"),
 				),
 			},
@@ -35,51 +61,57 @@ func TestAccIdentityPermissionsDataSource_basic(t *testing.T) {
 	})
 }
 
-func testAccIdentityPermissionsDataSource_basic() string {
-	return `
-data "huaweicloud_identity_permissions" "test" {
+func testAccDataSourcePermissions_basic(name string) string {
+	return fmt.Sprintf(`
+# All
+data "huaweicloud_identity_permissions" "all" {
 }
 
-data "huaweicloud_identity_permissions" "by_name" {
-  name = "KMS Administrator"
+# Filter by name
+data "huaweicloud_identity_permissions" "filter_by_name" {
+  name = "%[1]s"
 }
 
-data "huaweicloud_identity_permissions" "by_catalog" {
+output "name_filter_is_useful" {
+  value = alltrue([for v in data.huaweicloud_identity_permissions.filter_by_name.permissions[*].name : v == "KMS Administrator"])
+}
+
+# Filter by catalog
+data "huaweicloud_identity_permissions" "filter_by_catalog" {
   catalog = "ELB"
 }
 
-data "huaweicloud_identity_permissions" "obs_policy" {
+output "catalog_filter_is_useful" {
+  value = alltrue([for v in data.huaweicloud_identity_permissions.filter_by_catalog.permissions[*].catalog : v == "ELB"])
+}
+
+# Filter by type
+data "huaweicloud_identity_permissions" "filter_by_type" {
   type    = "system-policy"
   catalog = "OBS"
 }
 
-data "huaweicloud_identity_permissions" "custom" {
+output "type_filter_is_useful" {
+  value = alltrue([for v in data.huaweicloud_identity_permissions.filter_by_type.permissions[*].catalog : v == "OBS"])
+}
+
+# Filter by custom
+data "huaweicloud_identity_permissions" "filter_by_custom" {
   type = "custom"
 }
 
-data "huaweicloud_identity_permissions" "by_scope_type" {
-  scope_type = "project"
-  name = "CCE FullAccess"
-}
-
-output "name_filter_is_useful" {
-  value = alltrue([for v in data.huaweicloud_identity_permissions.by_name.permissions[*].name : v == "KMS Administrator"])
-}
-
-output "catalog_filter_is_useful" {
-  value = alltrue([for v in data.huaweicloud_identity_permissions.by_catalog.permissions[*].catalog : v == "ELB"])
-}
-
-output "type_filter_is_useful" {
-  value = alltrue([for v in data.huaweicloud_identity_permissions.obs_policy.permissions[*].catalog : v == "OBS"])
-}
-
 output "custom_filter_is_useful" {
-  value = alltrue([for v in data.huaweicloud_identity_permissions.custom.permissions[*].catalog : v == "CUSTOMED"])
+  value = alltrue([for v in data.huaweicloud_identity_permissions.filter_by_custom.permissions[*].catalog : v == "CUSTOMED"])
+}
+
+# Filter by scope type
+data "huaweicloud_identity_permissions" "filter_by_scope_type" {
+  scope_type = "project"
+  name       = "CCE FullAccess"
 }
 
 output "scope_type_filter_is_useful" {
-  value = alltrue([length(data.huaweicloud_identity_permissions.by_scope_type.permissions) == 1])
+  value = alltrue([length(data.huaweicloud_identity_permissions.filter_by_scope_type.permissions) == 1])
 }
-`
+`, name)
 }

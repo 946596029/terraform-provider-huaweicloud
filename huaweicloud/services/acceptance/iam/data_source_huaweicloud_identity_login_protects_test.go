@@ -2,6 +2,7 @@ package iam
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -9,11 +10,14 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func TestAccDataSourceIdentityLoginProtects_basic(t *testing.T) {
-	userName := acceptance.RandomAccResourceName()
-	initPassword := acceptance.RandomPassword()
-	dataSourceName := "data.huaweicloud_identity_login_protects.test"
-	dc := acceptance.InitDataSourceCheck(dataSourceName)
+func TestAccDataSourceLoginProtects_basic(t *testing.T) {
+	var (
+		userName = acceptance.RandomAccResourceName()
+		password = acceptance.RandomPassword()
+
+		dcName = "data.huaweicloud_identity_login_protects.test"
+		dc     = acceptance.InitDataSourceCheck(dcName)
+	)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
@@ -23,36 +27,44 @@ func TestAccDataSourceIdentityLoginProtects_basic(t *testing.T) {
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testTestDataSourceIdentityLoginProtects,
+				Config: testAccDataSourceLoginProtects_basic_step1,
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
-					resource.TestCheckResourceAttrSet(dataSourceName, "login_protects.#"),
+					resource.TestCheckResourceAttr(dcName, "login_protects.#", "0"),
 				),
 			},
 			{
-				Config: testTestDataSourceIdentityLoginProtectsWithUserId(userName, initPassword),
+				Config: testAccDataSourceLoginProtects_basic_step2(userName, password),
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
-					resource.TestCheckResourceAttrSet(dataSourceName, "login_protects.#"),
-					resource.TestCheckResourceAttrSet(dataSourceName, "login_protects.0.user_id"),
-					resource.TestCheckResourceAttr(dataSourceName, "login_protects.0.enabled", "true"),
-					resource.TestCheckResourceAttr(dataSourceName, "login_protects.0.verification_method", "email"),
+					resource.TestMatchResourceAttr(dcName, "login_protects.#", regexp.MustCompile(`^[1-9]([0-9]*)?$`)),
+					resource.TestCheckResourceAttrSet(dcName, "login_protects.0.user_id"),
+					resource.TestCheckResourceAttr(dcName, "login_protects.0.enabled", "true"),
+					resource.TestCheckResourceAttr(dcName, "login_protects.0.verification_method", "email"),
 				),
 			},
 		},
 	})
 }
 
-const testTestDataSourceIdentityLoginProtects = `
+const testAccDataSourceLoginProtects_basic_step1 = `
 data "huaweicloud_identity_login_protects" "test" {}
 `
 
-func testTestDataSourceIdentityLoginProtectsWithUserId(name, password string) string {
+func testAccDataSourceLoginProtects_basic_step2(name, password string) string {
 	return fmt.Sprintf(`
-%[1]s
+resource "huaweicloud_identity_user" "test" {
+  name        = "%[1]s"
+  password    = "%[2]s"
+  enabled     = true
+  email       = "%[1]s@abc.com"
+  description = "tested by terraform"
+  
+  login_protect_verification_method = "email"
+}
 
 data "huaweicloud_identity_login_protects" "test" {
-  user_id = huaweicloud_identity_user.user_1.id
+  user_id = huaweicloud_identity_user.test.id
 }
-`, testAccIdentityUser_basic(name, password))
+`, name, password)
 }

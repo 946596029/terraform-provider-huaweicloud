@@ -14,7 +14,7 @@ import (
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
-	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dws"
+	// "github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dws"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
@@ -60,12 +60,13 @@ func getLogicalClusterResourceFunc(cfg *config.Config, state *terraform.Resource
 }
 
 // Two logical clusters are created to test concurrent creation and deletion scenarios.
+// The physical cluster is required to have a separated architecture for storage and compute,
+// and at least 6 expandable nodes are required.
 func TestAccLogicalCluster_basic(t *testing.T) {
 	var obj interface{}
 
 	name := acceptance.RandomAccResourceName()
 	rName := "huaweicloud_dws_logical_cluster.test"
-	rName2 := "huaweicloud_dws_logical_cluster.test2"
 
 	rc := acceptance.InitResourceCheck(
 		rName,
@@ -74,7 +75,10 @@ func TestAccLogicalCluster_basic(t *testing.T) {
 	)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { acceptance.TestAccPreCheck(t) },
+		PreCheck:          func() {
+			acceptance.TestAccPreCheck(t)
+			acceptance.TestAccPreCheckDwsClusterId(t)
+		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		CheckDestroy:      rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
@@ -82,11 +86,9 @@ func TestAccLogicalCluster_basic(t *testing.T) {
 				Config: testLogicalCluster_basic_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
-					resource.TestCheckResourceAttrPair(rName, "cluster_id",
-						"huaweicloud_dws_cluster.test", "id"),
 					resource.TestCheckResourceAttr(rName, "logical_cluster_name", name),
-					resource.TestCheckResourceAttr(rName, "cluster_rings.#", "2"),
-					resource.TestCheckResourceAttr(rName2, "cluster_rings.#", "1"),
+					resource.TestCheckResourceAttr(rName, "cluster_rings.#", "1"),
+					// resource.TestCheckResourceAttr(rName2, "cluster_rings.#", "1"),
 					resource.TestCheckResourceAttrSet(rName, "cluster_rings.0.ring_hosts.0.host_name"),
 					resource.TestCheckResourceAttrSet(rName, "cluster_rings.0.ring_hosts.0.back_ip"),
 					resource.TestCheckResourceAttrSet(rName, "cluster_rings.0.ring_hosts.0.cpu_cores"),
@@ -108,10 +110,22 @@ func TestAccLogicalCluster_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet(rName, "edit_enable"),
 					resource.TestCheckResourceAttrSet(rName, "restart_enable"),
 					resource.TestCheckResourceAttrSet(rName, "delete_enable"),
+
+					resource.TestCheckResourceAttr(rName, "volume_usage.#", "1"),
+					resource.TestCheckResourceAttrSet(rName, "volume_usage.0.usage"),
+					resource.TestCheckResourceAttrSet(rName, "volume_usage.0.total"),
+					resource.TestCheckResourceAttrSet(rName, "volume_usage.0.percent"),
 				),
 			},
 			{
 				Config: testLogicalCluster_basic_step2(name),
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(rName, "cluster_rings.#", "2"),
+				),
+			},
+			{
+				Config: testLogicalCluster_basic_step3(name),
 			},
 			{
 				ResourceName:      rName,
@@ -124,27 +138,54 @@ func TestAccLogicalCluster_basic(t *testing.T) {
 }
 
 func testLogicalCluster_base(name string) string {
-	clusterBasic := testAccDwsCluster_basic_step1(name, 10, dws.PublicBindTypeAuto, "cluster123@!")
 	return fmt.Sprintf(`
-%s
-
 data "huaweicloud_dws_logical_cluster_rings" "test" {
-  cluster_id = huaweicloud_dws_cluster.test.id
+  cluster_id = "%[1]s"
 }
-`, clusterBasic)
+`, acceptance.HW_DWS_CLUSTER_ID)
 }
 
 func testLogicalCluster_basic(name string) string {
 	return fmt.Sprintf(`
-%s
+%[1]s
 
 resource "huaweicloud_dws_logical_cluster" "test" {
-  cluster_id           = huaweicloud_dws_cluster.test.id
-  logical_cluster_name = "%s"
+  cluster_id           = "%[2]s"
+  logical_cluster_name = "%[3]s"
 
   cluster_rings {
     dynamic "ring_hosts" {
       for_each = data.huaweicloud_dws_logical_cluster_rings.test.cluster_rings.0.ring_hosts[*]
+
+      content {
+        host_name = ring_hosts.value.host_name
+        back_ip   = ring_hosts.value.back_ip
+        cpu_cores = ring_hosts.value.cpu_cores
+        memory    = ring_hosts.value.memory
+        disk_size = ring_hosts.value.disk_size
+      }
+    }
+  }
+}
+`, testLogicalCluster_base(name), acceptance.HW_DWS_CLUSTER_ID, name)
+}
+
+func testLogicalCluster_basic_step1(name string) string {
+	return testLogicalCluster_basic(name)
+}
+
+func testLogicalCluster_basic_step2(name string) string {
+	return fmt.Sprintf(`
+%[1]s
+
+resource "huaweicloud_dws_logical_cluster" "test" {
+  cluster_id           = "%[2]s"
+  logical_cluster_name = "%[3]s"
+
+  cluster_rings {
+    dynamic "ring_hosts" {
+      for_each = data.huaweicloud_dws_logical_cluster_rings.test.cluster_rings.0.ring_hosts[*]
+
       content {
         host_name = ring_hosts.value.host_name
         back_ip   = ring_hosts.value.back_ip
@@ -158,6 +199,7 @@ resource "huaweicloud_dws_logical_cluster" "test" {
   cluster_rings {
     dynamic "ring_hosts" {
       for_each = data.huaweicloud_dws_logical_cluster_rings.test.cluster_rings.1.ring_hosts[*]
+
       content {
         host_name = ring_hosts.value.host_name
         back_ip   = ring_hosts.value.back_ip
@@ -168,45 +210,16 @@ resource "huaweicloud_dws_logical_cluster" "test" {
     }
   }
 }
-
-resource "huaweicloud_dws_logical_cluster" "test2" {
-  cluster_id           = huaweicloud_dws_cluster.test.id
-  logical_cluster_name = "%s_test2"
-
-  cluster_rings {
-    dynamic "ring_hosts" {
-      for_each = data.huaweicloud_dws_logical_cluster_rings.test.cluster_rings.2.ring_hosts[*]
-      content {
-        host_name = ring_hosts.value.host_name
-        back_ip   = ring_hosts.value.back_ip
-        cpu_cores = ring_hosts.value.cpu_cores
-        memory    = ring_hosts.value.memory
-        disk_size = ring_hosts.value.disk_size
-      }
-    }
-  }
-}
-`, testLogicalCluster_base(name), name, name)
+`, testLogicalCluster_base(name), acceptance.HW_DWS_CLUSTER_ID, name)
 }
 
-func testLogicalCluster_basic_step1(name string) string {
-	return testLogicalCluster_basic(name)
-}
-
-func testLogicalCluster_basic_step2(name string) string {
+func testLogicalCluster_basic_step3(name string) string {
 	return fmt.Sprintf(`
-%s
-
 resource "huaweicloud_dws_logical_cluster_restart" "test" {
-  cluster_id         = huaweicloud_dws_cluster.test.id
+  cluster_id         = "%[2]s"
   logical_cluster_id = huaweicloud_dws_logical_cluster.test.id
 }
-
-resource "huaweicloud_dws_logical_cluster_restart" "test2" {
-  cluster_id         = huaweicloud_dws_cluster.test.id
-  logical_cluster_id = huaweicloud_dws_logical_cluster.test2.id
-}
-`, testLogicalCluster_basic(name))
+`, testLogicalCluster_basic_step2(name), acceptance.HW_DWS_CLUSTER_ID)
 }
 
 // testLogicalClusterImportState use to return an ID with format <cluster_id>/<id>

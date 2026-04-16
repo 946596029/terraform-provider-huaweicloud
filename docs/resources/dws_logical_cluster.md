@@ -62,29 +62,28 @@ The following arguments are supported:
   The name must be unique and cannot be the keywords `group_version1`, `group_version2`, `group_version3`,
   `installation`, `elastic_group`, `optimal`, and `query`.
 
-* `cluster_rings` - (Required, List, ForceNew) Specifies the DWS logical cluster ring list information.
-  Changing this parameter will create a new resource.
+* `cluster_rings` - (Required, List) Specifies the DWS logical cluster ring list information.
 The [cluster_rings](#LogicalCluster_ClusterRings) structure is documented below.
 
 <a name="LogicalCluster_ClusterRings"></a>
 The `cluster_rings` block supports:
 
-* `ring_hosts` - (Required, List, ForceNew) Specifies the cluster host ring information. All host information of a ring
-  must be specified. Changing this parameter will create a new resource.
+* `ring_hosts` - (Required, List) Specifies the cluster host ring information. All host information of a ring
+  must be specified.
 The [ring_hosts](#LogicalCluster_RingHosts) structure is documented below.
 
 <a name="LogicalCluster_RingHosts"></a>
 The `ring_hosts` block supports:
 
-* `host_name` - (Required, String, ForceNew) Specifies the host name. Changing this parameter will create a new resource.
+* `host_name` - (Required, String) Specifies the host name.
 
-* `back_ip` - (Required, String, ForceNew) Specifies the backend IP address. Changing this parameter will create a new resource.
+* `back_ip` - (Required, String) Specifies the backend IP address.
 
-* `cpu_cores` - (Required, Int, ForceNew) Specifies the number of CPU cores. Changing this parameter will create a new resource.
+* `cpu_cores` - (Required, Int) Specifies the number of CPU cores.
 
-* `memory` - (Required, Float, ForceNew) Specifies the host memory. Changing this parameter will create a new resource.
+* `memory` - (Required, Float) Specifies the host memory.
 
-* `disk_size` - (Required, Float, ForceNew) Specifies the host disk size. Changing this parameter will create a new resource.
+* `disk_size` - (Required, Float) Specifies the host disk size.
 
 ## Attribute Reference
 
@@ -102,11 +101,24 @@ In addition to all arguments above, the following attributes are exported:
 
 * `delete_enable` - Whether deletion is allowed.
 
+* `volume_usage` - The volume usage information of the logical cluster.
+The [volume_usage](#LogicalCluster_VolumeUsage) structure is documented below.
+
+<a name="LogicalCluster_VolumeUsage"></a>
+The `volume_usage` block supports:
+
+* `usage` - The disk usage of the logical cluster.
+
+* `total` - The total disk capacity of the logical cluster.
+
+* `percent` - The disk usage percentage of the logical cluster.
+
 ## Timeouts
 
 This resource provides the following timeouts configuration options:
 
 * `create` - Default is 10 minutes.
+* `update` - Default is 10 minutes.
 * `delete` - Default is 10 minutes.
 
 ## Import

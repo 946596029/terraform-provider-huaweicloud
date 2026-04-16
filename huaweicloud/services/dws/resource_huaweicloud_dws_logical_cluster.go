@@ -7,7 +7,10 @@ package dws
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,17 +38,23 @@ var requestOpts = golangsdk.RequestOpts{
 
 // @API DWS POST /v2/{project_id}/clusters/{cluster_id}/logical-clusters
 // @API DWS GET /v2/{project_id}/clusters/{cluster_id}/logical-clusters
+// @API DWS PUT /v2/{project_id}/clusters/{cluster_id}/logical-clusters/{logical_cluster_id}
+// @API DWS GET /v2/{project_id}/clusters/{cluster_id}/logical-clusters/volumes
 // @API DWS DELETE /v2/{project_id}/clusters/{cluster_id}/logical-clusters/{logical_cluster_id}
 func ResourceLogicalCluster() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceLogicalClusterCreate,
 		ReadContext:   resourceLogicalClusterRead,
+		UpdateContext: resourceLogicalClusterUpdate,
 		DeleteContext: resourceLogicalClusterDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: resourceLogicalClusterImportState,
 		},
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(10 * time.Minute),
+			// fix
+			Create: schema.DefaultTimeout(3 * time.Minute),
+
+			Update: schema.DefaultTimeout(10 * time.Minute),
 			Delete: schema.DefaultTimeout(10 * time.Minute),
 		},
 
@@ -56,6 +65,8 @@ func ResourceLogicalCluster() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
+
+			// Required
 			"cluster_id": {
 				Type:        schema.TypeString,
 				Required:    true,
@@ -70,11 +81,12 @@ func ResourceLogicalCluster() *schema.Resource {
 			},
 			"cluster_rings": {
 				Type:        schema.TypeSet,
-				Elem:        logicalClusterRingsSchema(),
 				Required:    true,
-				ForceNew:    true,
+				Elem:        logicalClusterRingsSchema(),
 				Description: `Specifies the DWS cluster ring list information.`,
 			},
+
+			// Attributes
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -100,6 +112,19 @@ func ResourceLogicalCluster() *schema.Resource {
 				Computed:    true,
 				Description: `Whether deletion is allowed.`,
 			},
+			"volume_usage": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem:        logicalClusterVolumeUsageSchema(),
+				Description: `The volume usage information of the logical cluster.`,
+			},
+
+			// Internal parameters
+			"enable_force_new": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: utils.SchemaDesc("", utils.SchemaDescInput{Internal: true}),
+			},
 		},
 	}
 }
@@ -111,7 +136,6 @@ func logicalClusterRingsSchema() *schema.Resource {
 				Type:        schema.TypeSet,
 				Elem:        logicalRingHostsSchema(),
 				Required:    true,
-				ForceNew:    true,
 				Description: `Indicates the cluster host ring information.`,
 			},
 		},
@@ -125,36 +149,53 @@ func logicalRingHostsSchema() *schema.Resource {
 			"host_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
 				Description: `Specifies the host name.`,
 			},
 			"back_ip": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
 				Description: `Specifies the backend IP address.`,
 			},
 			"cpu_cores": {
 				Type:        schema.TypeInt,
 				Required:    true,
-				ForceNew:    true,
 				Description: `Specifies the number of CPU cores.`,
 			},
 			"memory": {
 				Type:        schema.TypeFloat,
 				Required:    true,
-				ForceNew:    true,
 				Description: `Specifies the host memory.`,
 			},
 			"disk_size": {
 				Type:        schema.TypeFloat,
 				Required:    true,
-				ForceNew:    true,
 				Description: `Specifies the host disk size.`,
 			},
 		},
 	}
 	return &sc
+}
+
+func logicalClusterVolumeUsageSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"usage": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The disk usage of the logical cluster.`,
+			},
+			"total": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The total disk capacity of the logical cluster.`,
+			},
+			"percent": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The disk usage percentage of the logical cluster.`,
+			},
+		},
+	}
 }
 
 func buildLogicalRingHostsRequestBody(rawParams interface{}) []map[string]interface{} {
@@ -211,6 +252,9 @@ func buildCreateLogicalClusterBodyParams(d *schema.ResourceData) map[string]inte
 // When the "error_code" is not equal to "DWS.0000", it means that the creation failed and needs to be retried.
 func buildCreateRetryFunc(client *golangsdk.ServiceClient, createPath string, createOpt *golangsdk.RequestOpts) common.RetryFunc {
 	retryFunc := func() (interface{}, bool, error) {
+
+		log.Printf("[MY-DEBUG] create logical cluster retry | buildCreateRetryFunc: createPath: %s, createOpt: %#v", createPath, createOpt.JSONBody)
+
 		createResp, err := client.Request("POST", createPath, createOpt)
 		if err != nil {
 			return nil, false, fmt.Errorf("error creating DWS logical cluster: %s", err)
@@ -222,6 +266,7 @@ func buildCreateRetryFunc(client *golangsdk.ServiceClient, createPath string, cr
 		}
 
 		errCode := utils.PathSearch("error_code", createRespBody, "").(string)
+		log.Printf("[MY-DEBUG] create logical cluster retry | buildCreateRetryFunc: errCode: %s", errCode)
 		if errCode == "DWS.0000" {
 			return nil, false, nil
 		}
@@ -245,14 +290,20 @@ func waitingForStateCompleted(ctx context.Context, client *golangsdk.ServiceClie
 		Pending: []string{"PENDING"},
 		Target:  []string{"COMPLETED"},
 		Refresh: func() (interface{}, string, error) {
+
+			log.Printf("[MY-DEBUG] waiting for state completed | waitingForStateCompleted: clusterName: %s", clusterName)
+			log.Printf("[MY-DEBUG] waiting for state completed | waitingForStateCompleted: expression: %s", expression)
+
 			clusterRespBody, err := readLogicalClusters(client, d)
 			if err != nil {
 				return nil, "ERROR", err
 			}
 
+
 			cluster := utils.PathSearch(expression, clusterRespBody, nil)
+			log.Printf("[MY-DEBUG] waiting for state completed | waitingForStateCompleted: cluster: %#v", cluster!=nil)
 			if cluster == nil {
-				return nil, "ERROR", golangsdk.ErrDefault404{}
+				return nil, "PENDING", nil
 			}
 
 			completed := utils.PathSearch("action_info.completed", cluster, false).(bool)
@@ -285,6 +336,8 @@ func resourceLogicalClusterCreate(ctx context.Context, d *schema.ResourceData, m
 
 	config.MutexKV.Lock(clusterId)
 	defer config.MutexKV.Unlock(clusterId)
+
+	log.Printf("[MY-DEBUG] create logical cluster start | createLogicalClusterCreate: clusterId: %s, clusterName: %s", clusterId, clusterName)
 
 	client, err := cfg.NewServiceClient(product, region)
 	if err != nil {
@@ -329,6 +382,47 @@ func resourceLogicalClusterCreate(ctx context.Context, d *schema.ResourceData, m
 	return resourceLogicalClusterRead(ctx, d, meta)
 }
 
+func buildUpdateLogicalClusterBodyParams(clusterRings interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"cluster_rings": buildLogicalClusterRingsRequestBody(clusterRings),
+		"mode": "insert",
+		"waiting_for_killing": 0,
+	}
+}
+
+func updateLogicalClusterRings(client *golangsdk.ServiceClient, clusterId, logicalClusterId string, clusterRings interface{}) error {
+	httpUrl := "v2/{project_id}/clusters/{cluster_id}/logical-clusters/{logical_cluster_id}"
+	updatePath := client.Endpoint + httpUrl
+	updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
+	updatePath = strings.ReplaceAll(updatePath, "{cluster_id}", clusterId)
+	updatePath = strings.ReplaceAll(updatePath, "{logical_cluster_id}", logicalClusterId)
+
+	updateOpt := golangsdk.RequestOpts{
+		MoreHeaders:      requestOpts.MoreHeaders,
+		KeepResponseBody: true,
+		JSONBody:         utils.RemoveNil(buildUpdateLogicalClusterBodyParams(clusterRings)),
+	}
+
+	_, err := client.Request("PUT", updatePath, &updateOpt)
+	return err
+}
+
+func queryLogicalClusterById(client *golangsdk.ServiceClient, d *schema.ResourceData) (interface{}, error) {
+	clusterRespBody, err := readLogicalClusters(client, d)
+	if err != nil {
+		return nil, err
+	}
+
+	logicalClusterId := d.Id()
+	expression := fmt.Sprintf("logical_clusters[?logical_cluster_id=='%s']|[0]", logicalClusterId)
+	cluster := utils.PathSearch(expression, clusterRespBody, nil)
+	if cluster == nil {
+		return nil, golangsdk.ErrDefault404{}
+	}
+
+	return cluster, nil
+}
+
 func flattenResponseBodyClusterRings(resp interface{}) []interface{} {
 	if resp == nil {
 		return nil
@@ -344,14 +438,165 @@ func flattenResponseBodyClusterRings(resp interface{}) []interface{} {
 	return rst
 }
 
+func hostInfoToUniqueId(host map[string]interface{}) string {
+	return fmt.Sprintf("%v:%v:%v:%.2f:%.2f",
+		utils.PathSearch("host_name", host, nil),
+		utils.PathSearch("back_ip", host, nil),
+		utils.PathSearch("cpu_cores", host, nil),
+		utils.PathSearch("memory", host, float64(0)).(float64),
+		utils.PathSearch("disk_size", host, float64(0)).(float64),
+	)
+}
+
+func hostsToUniqueIds(hosts []interface{}) []string {
+	hostList := make([]string, 0, len(hosts))
+	for _, host := range hosts {
+		hostList = append(hostList, hostInfoToUniqueId(host.(map[string]interface{})))
+	}
+	return hostList
+}
+
+func logicalClusterRingsUpdateRefreshFunc(client *golangsdk.ServiceClient, d *schema.ResourceData) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		cluster, err := queryLogicalClusterById(client, d)
+		if err != nil {
+			return nil, "ERROR", err
+		}
+
+		completed := utils.PathSearch("action_info.completed", cluster, false).(bool)
+		result := utils.PathSearch("action_info.result", cluster, "").(string)
+
+		if completed && result == "failed" {
+			return cluster, "ERROR", errors.New("the logical cluster update failed")
+		}
+
+		expectedUniqueIds := hostsToUniqueIds(d.Get("cluster_rings").(*schema.Set).List())
+		currentUniqueIds := hostsToUniqueIds(flattenResponseBodyClusterRings(cluster))
+		isAllContain := true
+		for _, expectedId := range expectedUniqueIds {
+			if !utils.StrSliceContains(currentUniqueIds, expectedId) {
+				isAllContain = false
+				break
+			}
+		}
+
+		if !completed || !isAllContain {
+			return cluster, "PENDING", nil
+		}
+
+		return cluster, "COMPLETED", nil
+	}
+}
+
+func waitingForClusterRingsUpdated(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration) error {
+	stateConf := &resource.StateChangeConf{
+		Pending:      []string{"PENDING"},
+		Target:       []string{"COMPLETED"},
+		Refresh:      logicalClusterRingsUpdateRefreshFunc(client, d),
+		Timeout:      timeout,
+		Delay:        30 * time.Second,
+		PollInterval: 30 * time.Second,
+	}
+	_, err := stateConf.WaitForStateContext(ctx)
+	return err
+}
+
+func resourceLogicalClusterUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var (
+		cfg              = meta.(*config.Config)
+		region           = cfg.GetRegion(d)
+		clusterId        = d.Get("cluster_id").(string)
+		logicalClusterId = d.Id()
+		clusterRings     = d.Get("cluster_rings")
+	)
+
+	config.MutexKV.Lock(clusterId)
+	defer config.MutexKV.Unlock(clusterId)
+
+	client, err := cfg.NewServiceClient("dws", region)
+	if err != nil {
+		return diag.Errorf("error creating DWS client: %s", err)
+	}
+
+	if d.HasChange("cluster_rings") {
+		err = updateLogicalClusterRings(client, clusterId, logicalClusterId, clusterRings)
+		if err != nil {
+			return diag.Errorf("error updating logical cluster: %s", err)
+		}
+
+		err = waitingForClusterRingsUpdated(ctx, client, d, d.Timeout(schema.TimeoutUpdate))
+		if err != nil {
+			return diag.Errorf("error waiting for logical cluster (%s) update to complete: %s", logicalClusterId, err)
+		}
+	}
+
+	return resourceLogicalClusterRead(ctx, d, meta)
+}
+
+func listLogicalClusterVolumes(client *golangsdk.ServiceClient, clusterId string) ([]interface{}, error) {
+	var (
+		httpUrl = "v2/{project_id}/clusters/{cluster_id}/logical-clusters/volumes?limit={limit}"
+		limit   = 100
+		offset  = 0
+		result  = make([]interface{}, 0)
+	)
+
+	listPathWithLimit := client.Endpoint + httpUrl
+	listPathWithLimit = strings.ReplaceAll(listPathWithLimit, "{project_id}", client.ProjectID)
+	listPathWithLimit = strings.ReplaceAll(listPathWithLimit, "{cluster_id}", clusterId)
+	listPathWithLimit = strings.ReplaceAll(listPathWithLimit, "{limit}", strconv.Itoa(limit))
+
+	listOpts := golangsdk.RequestOpts{
+		MoreHeaders:      requestOpts.MoreHeaders,
+		KeepResponseBody: true,
+	}
+
+	for {
+		listPathWithOffset := listPathWithLimit + fmt.Sprintf("&offset=%d", offset)
+		requestResp, err := client.Request("GET", listPathWithOffset, &listOpts)
+		if err != nil {
+			return nil, err
+		}
+
+		respBody, err := utils.FlattenResponse(requestResp)
+		if err != nil {
+			return nil, err
+		}
+
+		volumes := utils.PathSearch("volumes", respBody, make([]interface{}, 0)).([]interface{})
+		result = append(result, volumes...)
+		if len(volumes) < limit {
+			break
+		}
+		offset += len(volumes)
+	}
+
+	return result, nil
+}
+
+func flattenVolumeUsage(volume interface{}) []map[string]interface{} {
+	if volume == nil {
+		return nil
+	}
+
+	return []map[string]interface{}{
+		{
+			"usage":   utils.PathSearch("usage", volume, nil),
+			"total":   utils.PathSearch("total", volume, nil),
+			"percent": utils.PathSearch("percent", volume, nil),
+		},
+	}
+}
+
 func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		mErr                     *multierror.Error
-		cfg                      = meta.(*config.Config)
-		region                   = cfg.GetRegion(d)
-		getLogicalClusterProduct = "dws"
+		mErr      *multierror.Error
+		cfg       = meta.(*config.Config)
+		region    = cfg.GetRegion(d)
+		clusterId = d.Get("cluster_id").(string)
 	)
-	client, err := cfg.NewServiceClient(getLogicalClusterProduct, region)
+	client, err := cfg.NewServiceClient("dws", region)
 	if err != nil {
 		return diag.Errorf("error creating DWS client: %s", err)
 	}
@@ -370,6 +615,12 @@ func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta 
 		return common.CheckDeletedDiag(d, golangsdk.ErrDefault404{}, "")
 	}
 
+	volumes, err := listLogicalClusterVolumes(client, clusterId)
+	if err != nil {
+		log.Printf("[WARN] error retrieving volume usage: %s", err)
+	}
+	volumeUsage := utils.PathSearch(fmt.Sprintf("[?logical_cluster_name=='%s']|[0]", d.Get("logical_cluster_name").(string)), volumes, nil)
+
 	mErr = multierror.Append(
 		mErr,
 		d.Set("region", region),
@@ -380,6 +631,7 @@ func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta 
 		d.Set("edit_enable", utils.PathSearch("edit_enable", cluster, nil)),
 		d.Set("restart_enable", utils.PathSearch("restart_enable", cluster, nil)),
 		d.Set("delete_enable", utils.PathSearch("delete_enable", cluster, nil)),
+		d.Set("volume_usage", flattenVolumeUsage(volumeUsage)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
 }

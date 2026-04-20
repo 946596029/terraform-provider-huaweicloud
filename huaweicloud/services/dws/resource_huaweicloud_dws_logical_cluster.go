@@ -298,8 +298,8 @@ func waitingForStateCompleted(ctx context.Context, client *golangsdk.ServiceClie
 			return cluster, "PENDING", nil
 		},
 		Timeout:      timeout,
-		Delay:        30 * time.Second,
-		PollInterval: 30 * time.Second,
+		Delay:        3 * time.Minute,
+		PollInterval: 3 * time.Minute,
 	}
 	return stateConf.WaitForStateContext(ctx)
 }

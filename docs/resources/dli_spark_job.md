@@ -125,6 +125,27 @@ The following arguments are supported:
   If you set this value instead of the default value, `specification` will be invalid.
   Changing this parameter will submit a new spark job.
 
+* `cluster_name` - (Optional, String, ForceNew) Specifies the queue name where the batch processing job is located.
+  This parameter is compatible with the `queue_name` parameter. You are advised to use the `queue_name` parameter.
+  The `queue_name` and `cluster_name` parameters cannot coexist.
+  Changing this parameter will submit a new spark job.
+
+* `feature` - (Optional, String, ForceNew) Specifies the job feature, which indicates the type of the Spark image used by a job.
+  The valid values are **basic** and **custom**.
+  + **basic**: indicates that the basic Spark image provided by DLI is used.
+  + **custom**: indicates that the user-defined Spark image is used.
+  Changing this parameter will submit a new spark job.
+
+* `spark_version` - (Optional, String, ForceNew) Specifies the version of the Spark component used by a job.
+  Set this parameter when `feature` is set to **basic**.
+  If this parameter is not set, the default Spark component version 2.3.2 is used.
+  Changing this parameter will submit a new spark job.
+
+* `image` - (Optional, String, ForceNew) Specifies the custom image. The format is **Organization name/Image name:Image version**.
+  This parameter is valid only when `feature` is set to **custom**.
+  You can use this parameter with the `feature` parameter to specify a user-defined Spark image for job running.
+  Changing this parameter will submit a new spark job.
+
 The `dependent_packages` block supports:
 
 * `group_name` - (Required, String, ForceNew) Specifies the user group name.  
@@ -150,6 +171,15 @@ In addition to all arguments above, the following attributes are exported:
 
 * `id` - ID of the spark job.
 
-* `created_at` - Time of the DLI spark job submit.
+
+* `app_id` - The back-end application ID of the batch processing job.
+
+* `kind` - The type of the batch processing job. Only Spark parameters are supported.
+
+* `log` - The last 10 records of the current batch processing job.
 
 * `owner` - The owner of the spark job.
+
+* `created_at` - Time of the DLI spark job submit, in RFC3339 format.
+
+* `updated_at` - Time of the DLI spark job update, in RFC3339 format.

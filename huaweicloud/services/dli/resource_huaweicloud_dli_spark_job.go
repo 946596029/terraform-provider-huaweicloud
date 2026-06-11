@@ -177,9 +177,50 @@ func ResourceDliSparkJobV2() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"cluster_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"feature": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"spark_version": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+			"image": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
 			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"updated_at": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"app_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"kind": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"log": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"owner": {
 				Type:     schema.TypeString,
@@ -231,6 +272,10 @@ func buildDliSaprkJobCreateOpts(d *schema.ResourceData) batches.CreateOpts {
 		DriverCores:    d.Get("driver_cores").(int),
 		MaxRetryTimes:  d.Get("max_retries").(int),
 		Specification:  d.Get("specification").(string),
+		ClusterName:    d.Get("cluster_name").(string),
+		Feature:        d.Get("feature").(string),
+		SparkVersion:   d.Get("spark_version").(string),
+		Image:          d.Get("image").(string),
 	}
 	if params, ok := d.GetOk("app_parameters"); ok {
 		result.Arguments = utils.ExpandToStringList(params.([]interface{}))
@@ -282,10 +327,28 @@ func resourceDliSparkJobRead(_ context.Context, d *schema.ResourceData, meta int
 		return common.CheckDeletedDiag(d, err, "DLI spark job")
 	}
 
+	// Convert millisecond timestamps to RFC3339 format
+	createdAt := time.Unix(int64(resp.CreateTime)/1000, 0).Format(time.RFC3339)
+	updatedAt := time.Unix(int64(resp.UpdateTime)/1000, 0).Format(time.RFC3339)
+
+	// Convert appId array to string
+	appId := ""
+	if len(resp.AppId) > 0 {
+		appId = resp.AppId[0]
+	}
+
 	mErr := multierror.Append(nil,
 		d.Set("queue_name", resp.Queue),
 		d.Set("name", resp.Name),
-		d.Set("created_at", time.Unix(int64(resp.CreateTime)/1000, 0).Format("2006-01-02 15:04:05")),
+		d.Set("cluster_name", resp.ClusterName),
+		d.Set("feature", resp.Feature),
+		d.Set("spark_version", resp.SparkVersion),
+		d.Set("image", resp.Image),
+		d.Set("created_at", createdAt),
+		d.Set("updated_at", updatedAt),
+		d.Set("app_id", appId),
+		d.Set("kind", resp.Kind),
+		d.Set("log", resp.Log),
 		d.Set("owner", resp.Owner),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())

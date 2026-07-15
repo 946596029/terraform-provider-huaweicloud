@@ -4832,6 +4832,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_user_group":                        vpn.ResourceUserGroup(),
 			"huaweicloud_vpn_client_ca_certificate":             vpn.ResourceClientCACertificate(),
 			"huaweicloud_vpn_server":                            vpn.ResourceServer(),
+			"huaweicloud_vpn_p2c_gateway":                       vpn.ResourceP2CGateway(),
 			"huaweicloud_vpn_p2c_gateway_connection_disconnect": vpn.ResourceP2CGatewayConnectionDisconnect(),
 			"huaweicloud_vpn_p2c_gateway_upgrade":               vpn.ResourceP2CGatewayUpgrade(),
 			"huaweicloud_vpn_p2c_gateway_job_delete":            vpn.ResourceP2CGatewayJobDelete(),
